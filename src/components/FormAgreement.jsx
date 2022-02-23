@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { add } from "../store/consentListSlice";
 import { updateRespond, updateRecord} from "../store/consentSlice";
 
 import { OnLongPress } from '../utils/event';
 import { transLang } from "../utils/translator";
+import recognition from "../utils/recognition";
 
 import {
   CContainer,
@@ -14,51 +15,8 @@ import {
 } from '@coreui/react';
 
 
-let recognition = new window.SpeechRecognition();
-let speechRecognitionList = new window.SpeechGrammarList();
-
-recognition.continuous = false;
-recognition.interimResults = false;
-recognition.maxAlternatives = 1;
-
-const OnResult = (event) => {
-  // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
-  // The SpeechRecognitionResultList object contains SpeechRecognitionResult objects.
-  // It has a getter so it can be accessed like an array
-  // The first [0] returns the SpeechRecognitionResult at the last position.
-  // Each SpeechRecognitionResult object contains SpeechRecognitionAlternative objects that contain individual results.
-  // These also have getters so they can be accessed like arrays.
-  // The second [0] returns the SpeechRecognitionAlternative at position 0.
-  // We then return the transcript property of the SpeechRecognitionAlternative object
-  var message = event.results[0][0].transcript;
-  var confidence = event.results[0][0].confidence;
-  console.log("the transcript test ", message);
-  console.log('Confidence: ' + confidence);
-
-  return {
-    message,
-    confidence
-  };
-
-
-}
-
-recognition.onspeechend = function() {
-  recognition.stop();
-}
-
-recognition.onnomatch = function(event) {
-  console.log("I didn't recognise that Message.");
-}
-
-recognition.onerror = function(event) {
-  console.log('Error occurred in recognition: ' + event.error);
-}
-
-
-
 const MicButton = (props) => {
-  const onMicLongpress = OnLongPress(() => recognition.start(), 500);
+  const onMicLongpress = OnLongPress(() => {}, 500);
 
   return (
     <div className="d-flex justify-content-center">
@@ -93,6 +51,7 @@ const ShowSave = (props) => {
 const FormAgreement = props => {
 
   const [readConsent, setReadConsent] = useState(0);
+  const [init, setInit] = useState(true);
 
 
   const { name, lang, respond } = useSelector(state => state.consent);
@@ -107,6 +66,34 @@ const FormAgreement = props => {
   const confirmation = transLang(lang, 'confirmation');
 
 
+  useEffect(() => {
+    if (init) {
+      recognition.init();
+
+      setTimeout(function() {
+        recognition.initResult(({ message }) => {
+          if (message.indexOf('you must not access or use the site or the site services') >= 0 ) {
+            setReadConsent(readConsent + 1);
+            recognition.onEnd();
+          }
+
+          if (readConsent >= 1) {
+            let correct = (lang === 'en' && message === 'yes') ||
+                          (lang === 'fn' && message === 'oui')
+            dispatch(updateRespond(correct));
+          }
+        })
+        recognition.onAddRecognitionList(agreement, lang);
+        recognition.onStart();
+        console.log("this is set here");
+      }, 500);
+
+    }
+
+    setInit(false);
+  }, [init, agreement, lang, readConsent, dispatch]);
+
+
   const onSave = () => {
     let record = "this is a path to record file";
     dispatch(add({ lang, respond, name, record}))
@@ -118,25 +105,7 @@ const FormAgreement = props => {
     dispatch(updateRespond(null));
   }
 
-  if (!recognition.grammars) {
-    speechRecognitionList.addFromString(agreement, 1);
-    recognition.grammars = speechRecognitionList;
-    recognition.lang = lang === 'en' ? 'en-US' : 'fn-Fn';
-  }
 
-  recognition.onresult = function(event) {
-    const { message, confidence } = OnResult(event)
-
-    if (confidence >= 0.5) {
-      setReadConsent(readConsent + 1)
-    }
-
-    if (readConsent >= 1) {
-      let correct = lang === 'en' && message === 'yes' ||
-                    lang === 'fn' && message === 'oui'
-      dispatch(updateRespond(correct));
-    }
-  }.bind(this);
 
   return (
 

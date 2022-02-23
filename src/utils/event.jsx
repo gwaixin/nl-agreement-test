@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-export const OnLongPress = (callback = () => {}, ms = 300) => {
+export const OnLongPress = (callback = () => {}, endCallback = () => {}, ms = 300) => {
   const [startLongPress, setStartLongPress] = useState(false);
 
   useEffect(() => {
@@ -16,11 +16,16 @@ export const OnLongPress = (callback = () => {}, ms = 300) => {
     };
   }, [callback, ms, startLongPress]);
 
+
+  const stop = useCallback(() => {
+    setStartLongPress(false);
+  }, []);
+
   return {
     onMouseDown:  () => setStartLongPress(true),
-    onMouseUp:    () => setStartLongPress(false),
-    onMouseLeave: () => setStartLongPress(false),
+    onMouseUp:    stop,
+    onMouseLeave: stop,
     onTouchStart: () => setStartLongPress(true),
-    onTouchEnd:   () => setStartLongPress(false),
+    onTouchEnd:   stop,
   };
 }
