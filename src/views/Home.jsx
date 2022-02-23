@@ -22,7 +22,6 @@ const Home = props => {
     content = <FormAgreement />;
   }
 
-
   return (
     <div className="container">
       <h1>Consent Form</h1>

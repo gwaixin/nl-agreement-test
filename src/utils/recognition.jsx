@@ -6,6 +6,10 @@ class Recognition {
 
   constructor() {
 
+    if (!window.SpeechRecognition || !window.SpeechGrammarList) {
+      return;
+    }
+
     this.recognition = new window.SpeechRecognition();
     this.speechRecognitionList = new window.SpeechGrammarList();
   }
