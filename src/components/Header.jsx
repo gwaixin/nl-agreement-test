@@ -10,7 +10,7 @@ import {
 
 function Header() {
   return (
-    <CNavbar expand="lg" colorScheme="light" className="bg-light">
+    <CNavbar expand="lg" colorScheme="light" className="bg-light mb-5">
       <CContainer fluid>
         {/* <CCollapse className="navbar-collapse"> */}
           <CNavbarNav className="w-100 d-flex justify-content-end">
