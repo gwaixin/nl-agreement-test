@@ -78,6 +78,10 @@ class Recognition {
     this.recognition.start();
   }
 
+  onStop() {
+    this.recognition.stop();
+  }
+
   onEnd() {
     this.recognition.abort();
   }

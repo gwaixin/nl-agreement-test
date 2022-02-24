@@ -18,8 +18,11 @@ export const OnLongPress = (callback = () => {}, endCallback = () => {}, ms = 30
 
 
   const stop = useCallback(() => {
-    setStartLongPress(false);
-  }, []);
+    setTimeout(() => {
+      endCallback();
+      setStartLongPress(false);
+    }, ms)
+  }, [endCallback, ms]);
 
   return {
     onMouseDown:  () => setStartLongPress(true),

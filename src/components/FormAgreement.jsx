@@ -6,6 +6,7 @@ import { updateRespond, updateRecord} from "../store/consentSlice";
 import { OnLongPress } from '../utils/event';
 import { transLang } from "../utils/translator";
 import recognition from "../utils/recognition";
+import recorder from "../utils/recorder";
 
 import {
   CContainer,
@@ -13,10 +14,15 @@ import {
   CCol,
   CButton
 } from '@coreui/react';
+import { stringExist } from "../utils/helper";
 
 
 const MicButton = (props) => {
-  const onMicLongpress = OnLongPress(() => {}, 500);
+  const onMicLongpress = OnLongPress(
+    () => {  recorder.record(); recognition.onStart(); },
+    () => { recorder.stopRecord(); recognition.onStop(); },
+    30
+  );
 
   return (
     <div className="d-flex justify-content-center">
@@ -30,7 +36,7 @@ const MicButton = (props) => {
 const Response = (props) => {
   return (
     <div>
-      <CButton className="mr-1" color="light" onClick={() => alert("play!")} shape="rounded-pill">
+      <CButton className="mr-1" color="light" onClick={() => document.getElementById('player').play()} shape="rounded-pill">
         <img src="/icons/play.svg" alt="play button" />
       </CButton>
       <span>You responded "{ props.respond ? 'Yes' : 'No' }"</span>
@@ -57,9 +63,13 @@ const FormAgreement = props => {
   const { name, lang, respond } = useSelector(state => state.consent);
   const dispatch = useDispatch();
 
-  const response = respond !== null ?
-    <Response respond={respond} /> :
-    <MicButton useDispatch={dispatch}/>;
+  let response = '';
+
+  if (readConsent >= 1) {
+    response = respond !== null ?
+      <Response respond={respond} /> :
+      <MicButton useDispatch={dispatch}/>;
+  }
 
 
   const agreement = transLang(lang, 'agreement');
@@ -67,27 +77,42 @@ const FormAgreement = props => {
 
 
   useEffect(() => {
+
+    console.log("the readconcent is ->", readConsent);
+
     if (init) {
       recognition.init();
+      recorder.init('player');
+
+      // determine the last 5 words of the agreement
+      let speakTarget = agreement.split(" ");
+      speakTarget = speakTarget.splice(speakTarget.length - 5, speakTarget.length)
+                              .join(" ")
+                              .trim()
+                              .replace('.', '');
+      console.log(" the speak target is : ", speakTarget);
 
       setTimeout(function() {
         recognition.initResult(({ message }) => {
-          if (message.indexOf('you must not access or use the site or the site services') >= 0 ) {
-            setReadConsent(readConsent + 1);
+          if (message.indexOf(speakTarget) >= 0 ) {
             recognition.onEnd();
+            return setReadConsent(readConsent + 1);
           }
-
-          if (readConsent >= 1) {
-            let correct = (lang === 'en' && message === 'yes') ||
-                          (lang === 'fn' && message === 'oui')
-            dispatch(updateRespond(correct));
-          }
-        })
+        });
         recognition.onAddRecognitionList(agreement, lang);
         recognition.onStart();
-        console.log("this is set here");
       }, 500);
 
+    }
+
+    if (readConsent >= 1) {
+      recognition.initResult(({ message }) => {
+
+        console.log("testing this", readConsent)
+        let correct = (lang === 'en' && stringExist(message.toLowerCase(), 'yes')) ||
+                      (lang === 'fn' && stringExist(message.toLowerCase(), 'oui'))
+        dispatch(updateRespond(correct));
+      })
     }
 
     setInit(false);
@@ -118,7 +143,10 @@ const FormAgreement = props => {
       </CRow>
 
       <CRow>
-        <CCol>{response}</CCol>
+        <CCol>
+          <audio id="player" src=""></audio>
+          {response}
+        </CCol>
       </CRow>
 
       <ShowSave show={respond !== null} onSave={onSave} onRetry={() => onRetry()} />

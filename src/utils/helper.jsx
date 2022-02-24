@@ -8,3 +8,7 @@ export const langToWord = (lang) => {
   return word[lang];
 
 }
+
+export const stringExist = (text, lookup) => {
+  return text.indexOf(lookup) >= 0;
+}
