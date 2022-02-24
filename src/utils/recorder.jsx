@@ -16,18 +16,22 @@ class Recorder {
 
   chunks = [];
   mRecorder;
+  mRecorded;
   playerId;
 
 
-  async init(playerId) {
-    if (navigator.mediaDevices) {
-      this.playerId = playerId;
+  init() {
+    return new Promise(async (resolve, reject) => {
+      if (navigator.mediaDevices) {
+        // this.playerId = playerId;
 
-      let stream = await navigator.mediaDevices.getUserMedia(CONSTRAINTS);
-      this.mRecorder = new MediaRecorder(stream);
-      // visualize(stream);
-      this.initListeners();
-    }
+        let stream = await navigator.mediaDevices.getUserMedia(CONSTRAINTS);
+        this.mRecorder = new MediaRecorder(stream);
+        resolve();
+      } else {
+        reject('Navigator mediaDevices does not exist')
+      }
+    })
   }
 
 
@@ -47,6 +51,15 @@ class Recorder {
     }
   }
 
+
+  setPlayerId(playerId) {
+    this.playerId = playerId;
+  }
+
+  setOnRecord(callback) {
+    this.mRecorded = callback
+  }
+
   initListeners() {
 
     let self = this;
@@ -57,8 +70,12 @@ class Recorder {
       var audioURL = URL.createObjectURL(blob);
 
       let base64 = await blobToBase64(blob);
-      document.getElementById('player').src = audioURL;
+      document.getElementById(this.playerId).src = audioURL;
       console.log("recorder stopped", audioURL);
+
+      if (self.mRecorded) {
+        self.mRecorded(base64);
+      }
     }
 
     this.mRecorder.ondataavailable = function(e) {

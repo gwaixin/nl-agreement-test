@@ -4,7 +4,8 @@ const initialState = {
   name:    null,
   lang:    null,
   respond: null,
-  record:  null
+  record:  null,
+  submit: null
 }
 
 export const consentSlice = createSlice({
@@ -26,6 +27,10 @@ export const consentSlice = createSlice({
       state.record = action.payload
     },
 
+    submit: (state) => {
+      state.submit = true
+    },
+
     update: (state, action) => {
       state = action.payload
     },
@@ -42,6 +47,7 @@ export const {
   updateRespond,
   updateRecord,
   update,
+  submit,
   reset
 } = consentSlice.actions;
 

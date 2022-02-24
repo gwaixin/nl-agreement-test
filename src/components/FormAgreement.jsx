@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { add } from "../store/consentListSlice";
-import { updateRespond, updateRecord} from "../store/consentSlice";
+import { updateRespond, updateRecord, submit } from "../store/consentSlice";
 
 import { OnLongPress } from '../utils/event';
 import { transLang } from "../utils/translator";
@@ -75,21 +75,34 @@ const FormAgreement = props => {
   const agreement = transLang(lang, 'agreement');
   const confirmation = transLang(lang, 'confirmation');
 
-
   useEffect(() => {
+
+    const initializing = async () => {
+      try {
+
+        recognition.init();
+        await recorder.init();
+        recorder.setOnRecord((recorded) => dispatch(updateRecord(recorded)));
+        recorder.setPlayerId('player');
+        recorder.initListeners();
+
+      } catch (err) {
+        console.error("Error in initating utils : ", err);
+      }
+    }
 
     console.log("the readconcent is ->", readConsent);
 
+    // for initialization
     if (init) {
-      recognition.init();
-      recorder.init('player');
+
+      initializing();
 
       // determine the last 5 words of the agreement
       let speakTarget = agreement.split(" ");
-      speakTarget = speakTarget.splice(speakTarget.length - 5, speakTarget.length)
-                              .join(" ")
-                              .trim()
-                              .replace('.', '');
+      let offset  = speakTarget.length - 5;
+      let limit   = speakTarget.length;
+      speakTarget = speakTarget.splice(offset, limit).join(" ").trim().replace('.', '');
       console.log(" the speak target is : ", speakTarget);
 
       setTimeout(function() {
@@ -112,6 +125,7 @@ const FormAgreement = props => {
         let correct = (lang === 'en' && stringExist(message.toLowerCase(), 'yes')) ||
                       (lang === 'fn' && stringExist(message.toLowerCase(), 'oui'))
         dispatch(updateRespond(correct));
+        recognition.onEnd();
       })
     }
 
@@ -121,8 +135,8 @@ const FormAgreement = props => {
 
   const onSave = () => {
     let record = "this is a path to record file";
+    dispatch(submit(true));
     dispatch(add({ lang, respond, name, record}))
-    dispatch(updateRecord(record))
   }
 
   const onRetry = () => {
