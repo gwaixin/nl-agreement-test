@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
   CNavbar,
   CContainer,
@@ -14,10 +14,10 @@ function Header() {
           <CNavbarNav className="w-100 d-flex justify-content-end">
 
             <CNavItem className="mr-1">
-              <CNavLink  component={Link} to="/">Home</CNavLink>
+              <CNavLink  component={NavLink} to="/">Home</CNavLink>
             </CNavItem>
             <CNavItem>
-              <CNavLink  component={Link} to="/consents">Consents</CNavLink>
+              <CNavLink  component={NavLink} to="/consents">Consents</CNavLink>
             </CNavItem>
           </CNavbarNav>
       </CContainer>
