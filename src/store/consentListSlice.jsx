@@ -1,17 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = [
-  {
-    name: 'AAAA',
-    lang: 'en',
-    respond: true,
-    record: 'path/file/test'
-  }, {
-    name: 'BBBB',
-    lang: 'fn',
-    respond: true,
-    record: 'path/file/test'
-  }
+  // {
+  //   name: 'AAAA',
+  //   lang: 'en',
+  //   respond: true,
+  //   record: 'path/file/test'
+  // }
 ]
 
 export const consentListSlice = createSlice({
