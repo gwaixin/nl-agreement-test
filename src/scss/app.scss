@@ -31,11 +31,60 @@ html, body, #root {
   }
 }
 
+// Custom Margins
 .mr-1 {
   margin-right: 12px;
+}
+.ml-1 {
+  margin-left: 12px;
+}
+.ml-3 {
+  margin-left: 30px;
 }
 
 .consent-lists {
   width: 50%;
   min-width: 275px;
+}
+
+// Custom Buttons
+.btn {
+  > span {
+    margin-right: 12px;;
+  }
+}
+.btn-round {
+  width: 50px;
+  height: 50px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  &:active {
+    transform: scale(0.8);
+  }
+}
+
+// Custom Icons
+.c-icon {
+  width: 25px;
+  height: 25px;
+
+  &.sm {
+    transform: scale(0.5);
+  }
+  &.white {
+    filter: brightness(0) invert(1) opacity(0.8);
+  }
+  &.red {
+    filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8);
+  }
+  &.green {
+    filter: grayscale(100%) brightness(80%) sepia(300%) hue-rotate(50deg) saturate(500%);
+  }
+}
+
+// Custom list
+.cl-item {
+  padding: 30px 0;
 }
