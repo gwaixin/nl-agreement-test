@@ -67,7 +67,7 @@ class Recognition {
 
     this.speechRecognitionList.addFromString('#JSGF V1.0; grammar agreements; public <agreement> = ' + str, 1);
     this.recognition.grammars = this.speechRecognitionList;
-    this.recognition.lang = lang === 'en' ? 'en-US' : 'fn-Fn';
+    this.recognition.lang = lang === 'en' ? 'en-US' : 'fr-FR';
 
     console.log(this.speechRecognitionList[0].src);
     console.log(this.speechRecognitionList[0].weight);
