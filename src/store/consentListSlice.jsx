@@ -21,8 +21,8 @@ export const consentListSlice = createSlice({
     del: (state, action) => {
       state.splice(action.payload, 1);
     },
-    reset: (state, action) => {
-      state = []
+    reset: () => {
+      return initialState
     }
   }
 })

@@ -9,11 +9,20 @@ import consentListReducer from './consentListSlice';
 const consentMiddleware = (store) => (next) => (action) => {
 
   const result = next(action);
-  console.log("action.type :", action.type);
 
-  if ( action.type?.startsWith('consentList/add') ) {
-    let consents = store.getState().consentList;
-    localStorage.setItem('consents', JSON.stringify(consents))
+  switch (action.type) {
+    case 'consentList/add':
+      let consents = store.getState().consentList;
+      localStorage.setItem('consents', JSON.stringify(consents))
+      break;
+
+    case 'consentList/reset':
+      localStorage.removeItem('consents');
+      break;
+
+    default:
+
+      console.log("action.type :", action.type);
   }
 
   return result;
