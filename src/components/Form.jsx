@@ -8,6 +8,7 @@ import {
   CFormInput,
   CFormSelect
 } from '@coreui/react';
+import Icon from "./Icon";
 
 class Form extends React.Component {
 
@@ -34,7 +35,7 @@ class Form extends React.Component {
     const langs = [
       'Select Language',
       { value: 'en', label: 'English' },
-      { value: 'fn', label: 'French' },
+      { value: 'fr', label: 'French' },
     ]
 
     return (
@@ -58,7 +59,14 @@ class Form extends React.Component {
 
         <CRow className="mt-5 align-items-end">
           <CCol className="text-end">
-            <CButton color="light" type="button" className="next" onClick={() => this.props.onNext(name, lang)}>Next</CButton>
+            <CButton
+              color="light"
+              type="button"
+              className="next"
+              onClick={() => this.props.onNext(name, lang)}>
+                <span>Next</span>
+                <Icon className="sm" name="next" />
+            </CButton>
           </CCol>
         </CRow>
       </CContainer>

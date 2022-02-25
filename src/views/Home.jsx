@@ -20,7 +20,7 @@ const Home = props => {
   let content = <Form onNext={(name, lang) => dispatch(updateForm({ name, lang}))} />;
 
   // if all are filled up and saved consent then lets show success
-  if ( name && lang && respond && record && submit ) {
+  if ( name && lang && respond != null && record && submit ) {
     content = <FormSuccess />;
 
   // done already with name and lang form

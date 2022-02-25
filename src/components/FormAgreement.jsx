@@ -15,18 +15,19 @@ import {
   CButton
 } from '@coreui/react';
 import { stringExist } from "../utils/helper";
+import Icon from "./Icon";
 
 
 const MicButton = (props) => {
   const onMicLongpress = OnLongPress(
     () => {  recorder.record(); recognition.onStart(); },
     () => { recorder.stopRecord(); recognition.onStop(); },
-    30
+    100
   );
 
   return (
     <div className="d-flex justify-content-center">
-      <CButton color="light" {...onMicLongpress} shape="rounded-pill">
+      <CButton className="btn-round" color="light" {...onMicLongpress} shape="rounded-pill">
         <img src="/icons/mic.svg" alt="mic button" />
       </CButton>
     </div>
@@ -36,7 +37,7 @@ const MicButton = (props) => {
 const Response = (props) => {
   return (
     <div>
-      <CButton className="mr-1" color="light" onClick={() => document.getElementById('player').play()} shape="rounded-pill">
+      <CButton className="mr-1 btn-round" color="light" onClick={() => document.getElementById('player').play()} shape="rounded-pill">
         <img src="/icons/play.svg" alt="play button" />
       </CButton>
       <span>You responded "{ props.respond ? 'Yes' : 'No' }"</span>
@@ -46,9 +47,20 @@ const Response = (props) => {
 
 const ShowSave = (props) => {
   return props.show ? (<CRow>
-    <CCol className="text-end">
-      <CButton color="light" className="mr-1 retry" onClick={props.onRetry}>Retry</CButton>
-      <CButton className="next" onClick={props.onSave}>Save</CButton>
+    <CCol className="mt-5 text-end">
+
+      <CButton
+        color="light"
+        className="mr-1 retry"
+        onClick={props.onRetry}>
+        <span>Retry</span>
+        <Icon name="retry" className="sm" />
+      </CButton>
+
+      <CButton className="next" onClick={props.onSave}>
+        <span>Save</span>
+        <Icon name="next" className="sm white" />
+      </CButton>
     </CCol>
   </CRow>) : null
 }
@@ -60,7 +72,7 @@ const FormAgreement = props => {
   const [init, setInit] = useState(true);
 
 
-  const { name, lang, respond } = useSelector(state => state.consent);
+  const { name, lang, respond, record } = useSelector(state => state.consent);
   const dispatch = useDispatch();
 
   let response = '';
@@ -123,7 +135,7 @@ const FormAgreement = props => {
 
         console.log("testing this", readConsent)
         let correct = (lang === 'en' && stringExist(message.toLowerCase(), 'yes')) ||
-                      (lang === 'fn' && stringExist(message.toLowerCase(), 'oui'))
+                      (lang === 'fr' && stringExist(message.toLowerCase(), 'oui'))
         dispatch(updateRespond(correct));
         recognition.onEnd();
       })
@@ -134,7 +146,7 @@ const FormAgreement = props => {
 
 
   const onSave = () => {
-    let record = "this is a path to record file";
+    // let record = "this is a path to record file";
     dispatch(submit(true));
     dispatch(add({ lang, respond, name, record}))
   }

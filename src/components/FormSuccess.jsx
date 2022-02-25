@@ -1,11 +1,6 @@
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { reset } from "../store/consentSlice";
 
 function FormSuccess() {
-
-  const dispatch = useDispatch();
-
 
   return (
     <div className="text-center">
@@ -13,7 +8,7 @@ function FormSuccess() {
 
       <p>Thank you, your consent has been <br /> successfully saved!</p>
 
-      <Link to="/consents" onClick={() => dispatch(reset())}>View all consents</Link>
+      <Link to="/consents">View all consents</Link>
     </div>
   )
 }
